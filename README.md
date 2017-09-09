@@ -63,7 +63,7 @@ The model includes RELU layers to introduce nonlinearity (code line 63-69), and 
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model doesn't contain dropout layers. We train the model for 1-2 epochs,  and the model runs well. If we run it at least 5 epochs, the model will be overfitting (the performance is very bad on track 1).
+The model doesn't contain dropout layers. We use earlystopping to avoid overfitting, and the model is only trained for 1-2 epochs,  and the model runs well. If we run it at least 5 epochs, the model will be overfitting (the performance is very bad on track 1).
 
 #### 3. Model parameter tuning
 

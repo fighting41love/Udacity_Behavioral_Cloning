@@ -27,7 +27,7 @@ The goals / steps of this project are the following:
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 ## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
 ---
 ### Files Submitted & Code Quality
@@ -39,10 +39,17 @@ My project includes the following files:
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
+* video.mp4
 
 #### 2. Submission includes functional code
+The codes are submitted to the github: https://github.com/fighting41love/Udacity_Behavioral_Cloning
+The video of the project is uploaded to the youtube: https://youtu.be/MEffY-gDWfg
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
+
 ```
+python==3.6.2
+keras==2.0.6
+
 python drive.py model.h5
 ```
 
@@ -57,13 +64,13 @@ The model.py file contains the code for training and saving the convolution neur
 My model is similar to the Navidia model. It consists of several convolution neural layers and dense layers.
 Here is a description of each layer：
 
-![model_visualization.jpg](http://upload-images.jianshu.io/upload_images/2528310-e9a4da88e282c342.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![model_visualization.jpg](http://upload-images.jianshu.io/upload_images/2528310-e9a4da88e282c342.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/860)
 
 The model includes RELU layers to introduce nonlinearity (code line 63-69), and the data is normalized in the model using a Keras lambda layer (code line 61). 
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model doesn't contain dropout layers. We use earlystopping to avoid overfitting, and the model is only trained for 1-2 epochs,  and the model runs well. If we run it at least 5 epochs, the model will be overfitting (the performance is very bad on track 1).
+The model doesn't contain dropout layers. We use earlystopping to avoid overfitting, i.e., train the model for 1-2 epochs,  and the model runs well. If we run it at least 5 epochs, the model will be overfitting (the performance is very bad on track 1). We also flip and randomly modify the brightness to avoid overfitting too.
 
 #### 3. Model parameter tuning
 
@@ -74,16 +81,16 @@ Why the adam optimizer performs well without manually tuning parameters?
 
 I didn't use the provided images, and collected only 25000+ images by myself. All the images are used for training. I used a combination of center lane driving, recovering from the left and right sides of the road. The left and right images of the camera have a steering correction 0.35. The codes are as follows:
 ```
-# center: num==0, left: num==1, right: num == 2
-if num % 3 == 0:
-image_dir = all_data[0][num]
-angle = y[num]
-elif num % 3 == 1:
-image_dir = all_data[1][num]
-angle = y[num] + 0.35
-else:
-image_dir = all_data[2][num]
-angle = y[num] - 0.35
+    # center: num==0, left: num==1, right: num == 2
+    if num % 3 == 0:
+        image_dir = all_data[0][num]
+        angle = y[num]
+    elif num % 3 == 1:
+        image_dir = all_data[1][num]
+        angle = y[num] + 0.35
+    else:
+        image_dir = all_data[2][num]
+        angle = y[num] - 0.35
 ```
 
 For details about how I created the training data, see the next section. 
@@ -155,10 +162,13 @@ I then recorded the vehicle recovering from the left side and right sides of the
 
 After the collection process, I had 25710 number of data points. I then preprocessed this data by normalizing  the pixels in images with a lambda layer and removing the top part of the images, which are irrelevant to self-driving.
 
-```
+ ```
 model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160, 320, 3)))
 model.add(Cropping2D(cropping=((70, 25), (0, 0))))
 ```
 
+Then, I tried to randomly flip the image and randomly modify the brightness of the images to generate more data and  improve the robustness of the model.
+
+![Flip image](http://upload-images.jianshu.io/upload_images/2528310-7b02d6a93dc57d9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/860)
 
 I used this training data for training the model. The ideal number of epochs was 2 as evidenced by the performance on track 1. I used an adam optimizer so that manually training the learning rate wasn't necessary.
